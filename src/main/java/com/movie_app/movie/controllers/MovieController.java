@@ -2,7 +2,7 @@ package com.movie_app.movie.controllers;
 
 import com.movie_app.movie.model.dto.MovieDTO;
 import com.movie_app.movie.services.IMovieService;
-import com.movie_app.movie.services.Impl.MovieServiceImpl;
+import com.movie_app.movie.shared.filters.MovieFilter;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,9 +18,9 @@ public class MovieController {
     @Autowired
     private IMovieService movieService;
 
-    @GetMapping
-    public ResponseEntity<List<MovieDTO>> findAll() {
-        List<MovieDTO> movies = this.movieService.findAll();
+    @PostMapping("/search")
+    public ResponseEntity<List<MovieDTO>> findByFilter(MovieFilter filter) {
+        List<MovieDTO> movies = this.movieService.findByFilter(filter);
         return ResponseEntity.ok(movies);
     }
 

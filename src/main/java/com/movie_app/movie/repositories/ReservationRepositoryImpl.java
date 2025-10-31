@@ -19,9 +19,12 @@ public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
     @Override
     public List<Reservation> findByFilter(ReservationFilter filter) {
         Query query = WhereBuilder.create()
+                .eq("userName", filter.getUserName())
+                .eq("movieId", filter.getMovieId())
                 .betweenDates("reservationDate", filter.getStartDate(), filter.getEndDate())
                 .build();
 
         return mongoTemplate.find(query, Reservation.class);
     }
 }
+

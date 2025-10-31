@@ -7,6 +7,7 @@ import com.movie_app.movie.model.Movie;
 import com.movie_app.movie.model.dto.MovieDTO;
 import com.movie_app.movie.repositories.MovieRepository;
 import com.movie_app.movie.services.IMovieService;
+import com.movie_app.movie.shared.filters.MovieFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,8 +24,11 @@ public class MovieServiceImpl implements IMovieService {
     MovieMapper movieMapper;
 
     @Override
-    public List<MovieDTO> findAll() {
-        return this.movieRepository.findAll().stream().map(this.movieMapper::asModel).collect(Collectors.toList());
+    public List<MovieDTO> findByFilter(MovieFilter filter) {
+        return this.movieRepository.findByFilter(filter)
+                .stream()
+                .map(this.movieMapper::asModel)
+                .collect(Collectors.toList());
     }
 
     @Override
