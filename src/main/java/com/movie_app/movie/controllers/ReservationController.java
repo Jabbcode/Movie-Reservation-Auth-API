@@ -2,6 +2,7 @@ package com.movie_app.movie.controllers;
 
 import com.movie_app.movie.model.dto.ReservationDTO;
 import com.movie_app.movie.services.IReservationService;
+import com.movie_app.movie.shared.filters.ReservationFilter;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +17,9 @@ public class ReservationController {
     @Autowired
     private IReservationService reservationService;
 
-    @GetMapping
-    public ResponseEntity<List<ReservationDTO>> findAll() {
-        return ResponseEntity.ok(this.reservationService.findAll());
+    @PostMapping("/search")
+    public ResponseEntity<List<ReservationDTO>> findByFilter(@RequestBody ReservationFilter filter) {
+        return ResponseEntity.ok(this.reservationService.findByFilter(filter));
     }
 
     @GetMapping("/{id}")
