@@ -1,11 +1,10 @@
 package com.movie_app.movie.repositories;
 
-import com.movie_app.movie.model.Reservation;
+import com.movie_app.movie.model.ReservationEntity;
 import com.movie_app.movie.shared.filters.ReservationFilter;
-import com.movie_app.movie.shared.utils.WhereBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,18 +12,23 @@ import java.util.List;
 @Repository
 public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
-    public List<Reservation> findByFilter(ReservationFilter filter) {
-        Query query = WhereBuilder.create()
-                .eq("userName", filter.getUserName())
-                .eq("movieId", filter.getMovieId())
-                .betweenDates("reservationDate", filter.getStartDate(), filter.getEndDate())
-                .build();
+    public List<ReservationEntity> findByFilter(ReservationFilter filter) {
+        StringBuilder jpql = new StringBuilder("SELECT r FROM ReservationEntity r WHERE 1=1");
 
-        return mongoTemplate.find(query, Reservation.class);
+        if (filter.getMovieId() != null) {
+            jpql.append(" AND r.movie.id = :movieId");
+        }
+
+        TypedQuery<ReservationEntity> query = entityManager.createQuery(jpql.toString(), ReservationEntity.class);
+
+        if (filter.getMovieId() != null) {
+            query.setParameter("movieId", filter.getMovieId());
+        }
+
+        return query.getResultList();
     }
 }
-

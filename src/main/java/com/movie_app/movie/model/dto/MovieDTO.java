@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class MovieDTO {
-    private String id;
+    private Long id;
 
     @NotBlank(message = "El título no puede estar vacío")
     private String title;
@@ -23,5 +23,5 @@ public class MovieDTO {
 
     @NotNull(message = "La duración es obligatoria")
     @Positive(message = "La duración debe ser un número positivo")
-    private Number duration;
+    private Double duration;
 }

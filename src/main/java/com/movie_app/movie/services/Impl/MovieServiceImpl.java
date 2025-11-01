@@ -3,7 +3,7 @@ package com.movie_app.movie.services.Impl;
 import com.movie_app.movie.exception.ResourceAlreadyExistsException;
 import com.movie_app.movie.exception.ResourceNotFoundException;
 import com.movie_app.movie.mappers.MovieMapper;
-import com.movie_app.movie.model.Movie;
+import com.movie_app.movie.model.MovieEntity;
 import com.movie_app.movie.model.dto.MovieDTO;
 import com.movie_app.movie.repositories.MovieRepository;
 import com.movie_app.movie.services.IMovieService;
@@ -32,11 +32,11 @@ public class MovieServiceImpl implements IMovieService {
     }
 
     @Override
-    public MovieDTO findById(String id) {
-        Movie movie = this.movieRepository.findById(id)
+    public MovieDTO findById(Long id) {
+        MovieEntity movieEntity = this.movieRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No se encontro la pelicula con ese ID: " + id));
 
-        return this.movieMapper.asModel(movie);
+        return this.movieMapper.asModel(movieEntity);
 
     }
 
@@ -48,14 +48,14 @@ public class MovieServiceImpl implements IMovieService {
             throw new ResourceAlreadyExistsException("Ya existe una película con el título: " + movieDto.getTitle());
         }
 
-        Movie movie = movieMapper.asEntity(movieDto);
-        Movie newMovie = this.movieRepository.save(movie);
-        return movieMapper.asModel(newMovie);
+        MovieEntity movieEntity = movieMapper.asEntity(movieDto);
+        MovieEntity newMovieEntity = this.movieRepository.save(movieEntity);
+        return movieMapper.asModel(newMovieEntity);
     }
 
     @Override
-    public MovieDTO update(String id, MovieDTO movieDto) {
-        Movie existing = this.movieRepository.findById(id)
+    public MovieDTO update(Long id, MovieDTO movieDto) {
+        MovieEntity existing = this.movieRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Película no encontrada para actualizar"));
 
         if (movieDto.getTitle() != null && !movieDto.getTitle().isBlank()) {
@@ -70,13 +70,13 @@ public class MovieServiceImpl implements IMovieService {
             existing.setDuration(movieDto.getDuration());
         }
 
-        Movie updated = this.movieRepository.save(existing);
+        MovieEntity updated = this.movieRepository.save(existing);
         return movieMapper.asModel(updated);
     }
 
 
     @Override
-    public void delete(String id) {
+    public void delete(Long id) {
         if (!this.movieRepository.existsById(id)) {
             throw new ResourceNotFoundException("No se puede eliminar, la película no existe");
         }

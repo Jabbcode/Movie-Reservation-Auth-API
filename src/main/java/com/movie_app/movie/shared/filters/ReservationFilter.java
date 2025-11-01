@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class ReservationFilter extends Filter {
 
-    private String movieId;
+    private Long movieId;
 
     private String userName;
 }

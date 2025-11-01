@@ -9,11 +9,11 @@ public interface IMovieService {
 
     List<MovieDTO> findByFilter(MovieFilter filter);
 
-    MovieDTO findById(String id);
+    MovieDTO findById(Long id);
 
     MovieDTO save(MovieDTO movie);
 
-    MovieDTO update(String id, MovieDTO movie);
+    MovieDTO update(Long id, MovieDTO movie);
 
-    void delete(String id);
+    void delete(Long id);
 }

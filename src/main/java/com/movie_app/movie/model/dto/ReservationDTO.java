@@ -17,10 +17,10 @@ import java.time.LocalDateTime;
 @Builder
 public class ReservationDTO {
 
-    private String id;
+    private Long id;
 
     @NotBlank(message = "El nombre del cliente es obligatorio")
-    private String userName;
+    private String username;
 
     @NotNull(message = "La fecha de reserca es obligatoria")
     @Future(message = "La fecha de la reservación debe ser en el futuro")
@@ -28,7 +28,7 @@ public class ReservationDTO {
 
     @NotNull(message = "El ID de la película es obligatorio")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String movieId;
+    private Long movieId;
 
     private MovieDTO movie;
 }

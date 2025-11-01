@@ -9,9 +9,9 @@ public interface IReservationService {
 
     List<ReservationDTO> findByFilter(ReservationFilter filter);
 
-    ReservationDTO findById(String id);
+    ReservationDTO findById(Long id);
 
     ReservationDTO save(ReservationDTO dto);
 
-    void delete(String id);
+    void delete(Long id);
 }

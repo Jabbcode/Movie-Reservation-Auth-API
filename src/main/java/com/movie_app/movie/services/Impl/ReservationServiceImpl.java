@@ -3,8 +3,8 @@ package com.movie_app.movie.services.Impl;
 import com.movie_app.movie.exception.ResourceNotFoundException;
 import com.movie_app.movie.mappers.MovieMapper;
 import com.movie_app.movie.mappers.ReservationMapper;
-import com.movie_app.movie.model.Movie;
-import com.movie_app.movie.model.Reservation;
+import com.movie_app.movie.model.MovieEntity;
+import com.movie_app.movie.model.ReservationEntity;
 import com.movie_app.movie.model.dto.ReservationDTO;
 import com.movie_app.movie.repositories.MovieRepository;
 import com.movie_app.movie.repositories.ReservationRepository;
@@ -31,43 +31,43 @@ public class ReservationServiceImpl implements IReservationService {
 
     @Override
     public List<ReservationDTO> findByFilter(ReservationFilter filter) {
-        List<Reservation> results = reservationRepository.findByFilter(filter);
+        List<ReservationEntity> results = reservationRepository.findByFilter(filter);
 
         return results.stream().map(reservation -> {
             ReservationDTO reservationDTO = reservationMapper.asModel(reservation);
 
-            movieRepository.findById(reservation.getMovieId()).ifPresent(movie -> reservationDTO.setMovie(movieMapper.asModel(movie)));
+            movieRepository.findById(reservation.getMovie().getId()).ifPresent(movie -> reservationDTO.setMovie(movieMapper.asModel(movie)));
 
             return reservationDTO;
         }).collect(Collectors.toList());
     }
 
     @Override
-    public ReservationDTO findById(String id) {
-        Reservation reservation = reservationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No se encontró la reserva con ID: " + id));
+    public ReservationDTO findById(Long id) {
+        ReservationEntity reservation = reservationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No se encontró la reserva con ID: " + id));
 
         ReservationDTO reservationDTO = reservationMapper.asModel(reservation);
-        movieRepository.findById(reservation.getMovieId()).ifPresent(movie -> reservationDTO.setMovie(movieMapper.asModel(movie)));
+        movieRepository.findById(reservation.getMovie().getId()).ifPresent(movie -> reservationDTO.setMovie(movieMapper.asModel(movie)));
 
         return reservationDTO;
     }
 
     @Override
     public ReservationDTO save(ReservationDTO reservationDTO) {
-        Movie movie = movieRepository.findById(reservationDTO.getMovieId()).orElseThrow(() -> new ResourceNotFoundException("No se encontró la película con ID: " + reservationDTO.getMovieId()));
+        MovieEntity movieEntity = movieRepository.findById(reservationDTO.getMovieId()).orElseThrow(() -> new ResourceNotFoundException("No se encontró la película con ID: " + reservationDTO.getMovieId()));
 
-        Reservation reservation = reservationMapper.asEntity(reservationDTO);
-        Reservation saved = reservationRepository.save(reservation);
+        ReservationEntity reservation = reservationMapper.asEntity(reservationDTO);
+        ReservationEntity saved = reservationRepository.save(reservation);
 
         ReservationDTO result = reservationMapper.asModel(saved);
-        result.setMovie(movieMapper.asModel(movie));
+        result.setMovie(movieMapper.asModel(movieEntity));
 
         return result;
     }
 
     @Override
-    public void delete(String id) {
-        Reservation reservation = reservationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No se encontró la reserva con ID: " + id));
+    public void delete(Long id) {
+        ReservationEntity reservation = reservationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No se encontró la reserva con ID: " + id));
         reservationRepository.delete(reservation);
     }
 }

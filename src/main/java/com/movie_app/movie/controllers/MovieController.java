@@ -28,7 +28,7 @@ public class MovieController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<MovieDTO> findById(@PathVariable String id) {
+    public ResponseEntity<MovieDTO> findById(@PathVariable Long id) {
         MovieDTO movie = this.movieService.findById(id);
         return ResponseEntity.ok(movie);
     }
@@ -42,14 +42,14 @@ public class MovieController {
 
     @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<MovieDTO> update(@PathVariable String id, @RequestBody MovieDTO movieDto) {
+    public ResponseEntity<MovieDTO> update(@PathVariable Long id, @RequestBody MovieDTO movieDto) {
         MovieDTO updatedMovie = movieService.update(id, movieDto);
         return ResponseEntity.ok(updatedMovie);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> delete(@PathVariable String id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         movieService.delete(id);
         return ResponseEntity.noContent().build();
     }

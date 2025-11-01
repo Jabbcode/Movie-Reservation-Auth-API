@@ -26,7 +26,7 @@ public class ReservationController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ReservationDTO> findById(@PathVariable String id) {
+    public ResponseEntity<ReservationDTO> findById(@PathVariable Long id) {
         ReservationDTO reservation = reservationService.findById(id);
         return ResponseEntity.ok(reservation);
     }
@@ -39,7 +39,7 @@ public class ReservationController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> delete(@PathVariable String id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         this.reservationService.delete(id);
         return ResponseEntity.noContent().build();
     }
