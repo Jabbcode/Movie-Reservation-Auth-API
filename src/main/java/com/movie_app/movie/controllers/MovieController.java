@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,30 +20,35 @@ public class MovieController {
     private IMovieService movieService;
 
     @PostMapping("/search")
+    @PreAuthorize("permitAll()")
     public ResponseEntity<List<MovieDTO>> findByFilter(MovieFilter filter) {
         List<MovieDTO> movies = this.movieService.findByFilter(filter);
         return ResponseEntity.ok(movies);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<MovieDTO> findById(@PathVariable String id) {
         MovieDTO movie = this.movieService.findById(id);
         return ResponseEntity.ok(movie);
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<MovieDTO> save(@Valid @RequestBody MovieDTO movieDto) {
         MovieDTO newMovie = this.movieService.save(movieDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(newMovie);
     }
 
     @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<MovieDTO> update(@PathVariable String id, @RequestBody MovieDTO movieDto) {
         MovieDTO updatedMovie = movieService.update(id, movieDto);
         return ResponseEntity.ok(updatedMovie);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable String id) {
         movieService.delete(id);
         return ResponseEntity.noContent().build();
