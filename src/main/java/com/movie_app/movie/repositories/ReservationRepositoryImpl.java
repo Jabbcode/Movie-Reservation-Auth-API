@@ -1,7 +1,14 @@
 package com.movie_app.movie.repositories;
 
+import com.movie_app.movie.model.MovieEntity;
+import com.movie_app.movie.model.QMovieEntity;
+import com.movie_app.movie.model.QReservationEntity;
 import com.movie_app.movie.model.ReservationEntity;
+import com.movie_app.movie.shared.filters.MovieFilter;
 import com.movie_app.movie.shared.filters.ReservationFilter;
+import com.movie_app.movie.shared.utils.MovieWhereBuilder;
+import com.movie_app.movie.shared.utils.ReservationWhereBuilder;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -17,18 +24,16 @@ public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
 
     @Override
     public List<ReservationEntity> findByFilter(ReservationFilter filter) {
-        StringBuilder jpql = new StringBuilder("SELECT r FROM ReservationEntity r WHERE 1=1");
+        JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+        QReservationEntity movie = QReservationEntity.reservationEntity;
 
-        if (filter.getMovieId() != null) {
-            jpql.append(" AND r.movie.id = :movieId");
-        }
+        var where = ReservationWhereBuilder.create()
+                .userName(filter.getUserName())
+                .build();
 
-        TypedQuery<ReservationEntity> query = entityManager.createQuery(jpql.toString(), ReservationEntity.class);
-
-        if (filter.getMovieId() != null) {
-            query.setParameter("movieId", filter.getMovieId());
-        }
-
-        return query.getResultList();
+        return queryFactory
+                .selectFrom(movie)
+                .where(where)
+                .fetch();
     }
 }
