@@ -16,7 +16,7 @@ public class Filter implements FilterMovie, FilterReservation {
     @Serial
     private static final long serialVersionUID = 8832327472756517114L;
 
-    private Collection<String> title;
+    private String title;
 
     private String username;
 }

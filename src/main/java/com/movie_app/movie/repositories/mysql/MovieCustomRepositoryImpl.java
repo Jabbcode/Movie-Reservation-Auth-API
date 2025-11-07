@@ -33,7 +33,7 @@ public class MovieCustomRepositoryImpl implements MovieCustomRepository {
 
     private BooleanExpression generateWhere(final FilterMovie filter, final QMovieEntity m) {
         return new WhereBuilder(m)
-                .titles(filter.getTitle())
+                .likeTitle(filter.getTitle())
                 .build();
     }
 
@@ -43,10 +43,9 @@ public class MovieCustomRepositoryImpl implements MovieCustomRepository {
 
         private BooleanExpression booleanExpression = Expressions.asBoolean(true).isTrue();
 
-        WhereBuilder titles(final Collection<String> titles) {
-            if (!CollectionUtils.isEmpty(titles)) {
-                this.booleanExpression = this.booleanExpression
-                        .and(this.m.title.in(titles));
+        WhereBuilder likeTitle(final String likeTitle) {
+            if (likeTitle != null) {
+                this.booleanExpression = this.booleanExpression.and(this.m.title.containsIgnoreCase(likeTitle));
             }
             return this;
         }

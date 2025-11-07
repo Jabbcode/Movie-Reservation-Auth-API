@@ -20,7 +20,7 @@ public class MovieEntity {
 
     private String title;
     private String description;
-    private Number duration;
+    private Integer duration;
 
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<ReservationEntity> reservations;

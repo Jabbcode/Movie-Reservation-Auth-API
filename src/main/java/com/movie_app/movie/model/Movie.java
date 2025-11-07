@@ -23,7 +23,7 @@ public class Movie implements Serializable {
 
     private String description;
 
-    private Number duration;
+    private Integer duration;
 
     @Builder.Default
     @ToString.Exclude

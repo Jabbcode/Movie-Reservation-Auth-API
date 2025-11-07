@@ -5,6 +5,6 @@ import java.util.Collection;
 
 public interface FilterMovie extends Serializable {
 
-    Collection<String> getTitle();
+    String getTitle();
 
 }

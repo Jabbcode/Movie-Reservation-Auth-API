@@ -7,6 +7,7 @@ import com.movie_app.movie.model.Movie;
 import com.movie_app.movie.repositories.mysql.MovieRepository;
 import com.movie_app.movie.repositories.mysql.entity.MovieEntity;
 import com.movie_app.movie.services.MovieService;
+import com.movie_app.movie.shared.filters.Filter;
 import com.movie_app.movie.shared.filters.FilterMovie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -44,16 +45,12 @@ public class MovieServiceImpl implements MovieService {
     @Override
     @Transactional
     public Movie save(final Movie movie) {
-        final boolean exists = this.movieRepository.findAll()
-                .stream()
-                .anyMatch(m -> m.getTitle().equalsIgnoreCase(movie.getTitle()));
-
-        if (exists) {
+        if (this.movieRepository.existsByTitleIgnoreCase(movie.getTitle())) {
             throw new ResourceAlreadyExistsException("Ya existe una película con el título: " + movie.getTitle());
         }
 
         final MovieEntity newMovieEntity = this.movieRepository.save(this.movieMapper.asEntity(movie));
-        return movieMapper.asModel(newMovieEntity);
+        return this.movieMapper.asModel(newMovieEntity);
     }
 
     @Override

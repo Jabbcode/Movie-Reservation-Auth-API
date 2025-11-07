@@ -24,7 +24,7 @@ public class MovieController {
 
     @PostMapping("/search")
     @PreAuthorize("permitAll()")
-    public ResponseEntity<Collection<MovieDTO>> findByFilter(final FilterMovieDTO filterDTO) {
+    public ResponseEntity<Collection<MovieDTO>> findByFilter(final @RequestBody FilterMovieDTO filterDTO) {
         final Collection<MovieDTO> movies = this.movieService.findByFilter(this.movieMapper.asModel(filterDTO))
                 .stream()
                 .map(this.movieMapper::asDTO)

@@ -15,5 +15,5 @@ import java.util.Collection;
 @Builder
 public class FilterMovieDTO {
 
-    private Collection<String> title = new ArrayList<>();
+    private String title;
 }
