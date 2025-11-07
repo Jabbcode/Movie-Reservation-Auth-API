@@ -28,7 +28,7 @@ public class ReservationDTO {
 
     @NotNull(message = "El ID de la película es obligatorio")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private Long movieId;
+    private Integer movieId;
 
     private MovieDTO movie;
 }

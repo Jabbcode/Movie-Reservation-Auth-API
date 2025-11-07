@@ -3,28 +3,29 @@ package com.movie_app.movie.services.Impl;
 import com.movie_app.movie.exception.ResourceAlreadyExistsException;
 import com.movie_app.movie.exception.ResourceNotFoundException;
 import com.movie_app.movie.mappers.MovieMapper;
-import com.movie_app.movie.model.MovieEntity;
-import com.movie_app.movie.model.dto.MovieDTO;
-import com.movie_app.movie.repositories.MovieRepository;
-import com.movie_app.movie.services.IMovieService;
-import com.movie_app.movie.shared.filters.MovieFilter;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.movie_app.movie.model.Movie;
+import com.movie_app.movie.repositories.mysql.MovieRepository;
+import com.movie_app.movie.repositories.mysql.entity.MovieEntity;
+import com.movie_app.movie.services.MovieService;
+import com.movie_app.movie.shared.filters.FilterMovie;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 @Service
-public class MovieServiceImpl implements IMovieService {
+@RequiredArgsConstructor
+public class MovieServiceImpl implements MovieService {
 
-    @Autowired
-    MovieRepository movieRepository;
+    private final MovieRepository movieRepository;
 
-    @Autowired
-    MovieMapper movieMapper;
+    private final MovieMapper movieMapper;
 
     @Override
-    public List<MovieDTO> findByFilter(MovieFilter filter) {
+    @Transactional(readOnly = true)
+    public Collection<Movie> findByFilter(final FilterMovie filter) {
         return this.movieRepository.findByFilter(filter)
                 .stream()
                 .map(this.movieMapper::asModel)
@@ -32,54 +33,57 @@ public class MovieServiceImpl implements IMovieService {
     }
 
     @Override
-    public MovieDTO findById(Long id) {
+    @Transactional(readOnly = true)
+    public Movie findById(final Integer id) {
         MovieEntity movieEntity = this.movieRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No se encontro la pelicula con ese ID: " + id));
 
         return this.movieMapper.asModel(movieEntity);
-
     }
 
     @Override
-    public MovieDTO save(MovieDTO movieDto) {
-        boolean exists = this.movieRepository.findAll().stream().anyMatch(m -> m.getTitle().equalsIgnoreCase(movieDto.getTitle()));
+    @Transactional
+    public Movie save(final Movie movie) {
+        final boolean exists = this.movieRepository.findAll()
+                .stream()
+                .anyMatch(m -> m.getTitle().equalsIgnoreCase(movie.getTitle()));
 
         if (exists) {
-            throw new ResourceAlreadyExistsException("Ya existe una película con el título: " + movieDto.getTitle());
+            throw new ResourceAlreadyExistsException("Ya existe una película con el título: " + movie.getTitle());
         }
 
-        MovieEntity movieEntity = movieMapper.asEntity(movieDto);
-        MovieEntity newMovieEntity = this.movieRepository.save(movieEntity);
+        final MovieEntity newMovieEntity = this.movieRepository.save(this.movieMapper.asEntity(movie));
         return movieMapper.asModel(newMovieEntity);
     }
 
     @Override
-    public MovieDTO update(Long id, MovieDTO movieDto) {
-        MovieEntity existing = this.movieRepository.findById(id)
+    @Transactional
+    public Movie update(final Integer id, final Movie movie) {
+        final MovieEntity existing = this.movieRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Película no encontrada para actualizar"));
 
-        if (movieDto.getTitle() != null && !movieDto.getTitle().isBlank()) {
-            existing.setTitle(movieDto.getTitle());
+        if (movie.getTitle() != null && !movie.getTitle().isBlank()) {
+            existing.setTitle(movie.getTitle());
         }
 
-        if (movieDto.getDescription() != null && !movieDto.getDescription().isBlank()) {
-            existing.setDescription(movieDto.getDescription());
+        if (movie.getDescription() != null && !movie.getDescription().isBlank()) {
+            existing.setDescription(movie.getDescription());
         }
 
-        if (movieDto.getDuration() != null && movieDto.getDuration().doubleValue() > 0) {
-            existing.setDuration(movieDto.getDuration());
+        if (movie.getDuration() != null && movie.getDuration().doubleValue() > 0) {
+            existing.setDuration(movie.getDuration());
         }
 
-        MovieEntity updated = this.movieRepository.save(existing);
-        return movieMapper.asModel(updated);
+        return movieMapper.asModel(this.movieRepository.save(existing));
     }
 
 
     @Override
-    public void delete(Long id) {
+    @Transactional
+    public void delete(final Integer id) {
         if (!this.movieRepository.existsById(id)) {
             throw new ResourceNotFoundException("No se puede eliminar, la película no existe");
         }
-        movieRepository.deleteById(id);
+        this.movieRepository.deleteById(id);
     }
 }

@@ -23,5 +23,5 @@ public class MovieDTO {
 
     @NotNull(message = "La duración es obligatoria")
     @Positive(message = "La duración debe ser un número positivo")
-    private Double duration;
+    private Number duration;
 }

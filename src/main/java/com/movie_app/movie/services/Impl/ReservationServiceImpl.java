@@ -3,71 +3,73 @@ package com.movie_app.movie.services.Impl;
 import com.movie_app.movie.exception.ResourceNotFoundException;
 import com.movie_app.movie.mappers.MovieMapper;
 import com.movie_app.movie.mappers.ReservationMapper;
-import com.movie_app.movie.model.MovieEntity;
-import com.movie_app.movie.model.ReservationEntity;
-import com.movie_app.movie.model.dto.ReservationDTO;
-import com.movie_app.movie.repositories.MovieRepository;
-import com.movie_app.movie.repositories.ReservationRepository;
-import com.movie_app.movie.services.IReservationService;
-import com.movie_app.movie.shared.filters.ReservationFilter;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.movie_app.movie.model.Reservation;
+import com.movie_app.movie.repositories.mysql.MovieRepository;
+import com.movie_app.movie.repositories.mysql.ReservationRepository;
+import com.movie_app.movie.repositories.mysql.entity.MovieEntity;
+import com.movie_app.movie.repositories.mysql.entity.ReservationEntity;
+import com.movie_app.movie.services.ReservationService;
+import com.movie_app.movie.shared.filters.FilterReservation;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 @Service
-public class ReservationServiceImpl implements IReservationService {
+@RequiredArgsConstructor
+public class ReservationServiceImpl implements ReservationService {
 
-    @Autowired
-    ReservationRepository reservationRepository;
-    @Autowired
-    ReservationMapper reservationMapper;
-    @Autowired
-    MovieRepository movieRepository;
+    private final ReservationRepository reservationRepository;
 
-    @Autowired
-    MovieMapper movieMapper;
+    private final ReservationMapper reservationMapper;
+
+    private final MovieRepository movieRepository;
+
+    private final MovieMapper movieMapper;
 
     @Override
-    public List<ReservationDTO> findByFilter(ReservationFilter filter) {
-        List<ReservationEntity> results = reservationRepository.findByFilter(filter);
-
-        return results.stream().map(reservation -> {
-            ReservationDTO reservationDTO = reservationMapper.asModel(reservation);
-
-            movieRepository.findById(reservation.getMovie().getId()).ifPresent(movie -> reservationDTO.setMovie(movieMapper.asModel(movie)));
-
-            return reservationDTO;
-        }).collect(Collectors.toList());
+    @Transactional(readOnly = true)
+    public Collection<Reservation> findByFilter(FilterReservation filter) {
+        return this.reservationRepository.findByFilter(filter)
+                .stream()
+                .map(this.reservationMapper::asModel)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public ReservationDTO findById(Long id) {
-        ReservationEntity reservation = reservationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No se encontró la reserva con ID: " + id));
+    @Transactional(readOnly = true)
+    public Reservation findById(Integer id) {
+        ReservationEntity reservation = this.reservationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No se encontró la reserva con ID: " + id));
 
-        ReservationDTO reservationDTO = reservationMapper.asModel(reservation);
-        movieRepository.findById(reservation.getMovie().getId()).ifPresent(movie -> reservationDTO.setMovie(movieMapper.asModel(movie)));
+        Reservation reservationFound = reservationMapper.asModel(reservation);
+        this.movieRepository.findById(reservation.getMovie().getId())
+                .ifPresent(movie -> reservationFound.setMovie(this.movieMapper.asModel(movie)));
 
-        return reservationDTO;
+        return reservationFound;
     }
 
     @Override
-    public ReservationDTO save(ReservationDTO reservationDTO) {
-        MovieEntity movieEntity = movieRepository.findById(reservationDTO.getMovieId()).orElseThrow(() -> new ResourceNotFoundException("No se encontró la película con ID: " + reservationDTO.getMovieId()));
+    @Transactional
+    public Reservation save(final Reservation reservation) {
+        final MovieEntity movieEntity = this.movieRepository.findById(reservation.getMovie().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("No se encontró la película con ID: " + reservation.getMovie().getId()));
 
-        ReservationEntity reservation = reservationMapper.asEntity(reservationDTO);
-        ReservationEntity saved = reservationRepository.save(reservation);
+        final ReservationEntity newReservation = this.reservationRepository.save(this.reservationMapper.asEntity(reservation));
 
-        ReservationDTO result = reservationMapper.asModel(saved);
-        result.setMovie(movieMapper.asModel(movieEntity));
+        Reservation result = this.reservationMapper.asModel(newReservation);
+        result.setMovie(this.movieMapper.asModel(movieEntity));
 
         return result;
     }
 
     @Override
-    public void delete(Long id) {
-        ReservationEntity reservation = reservationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No se encontró la reserva con ID: " + id));
+    @Transactional
+    public void delete(Integer id) {
+        ReservationEntity reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No se encontró la reserva con ID: " + id));
         reservationRepository.delete(reservation);
     }
 }

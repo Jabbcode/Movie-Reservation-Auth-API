@@ -1,8 +1,9 @@
-package com.movie_app.movie.model;
+package com.movie_app.movie.repositories.mysql.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Collection;
 import java.util.List;
 
 @Data
@@ -15,12 +16,12 @@ public class MovieEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     private String title;
     private String description;
-    private Double duration;
+    private Number duration;
 
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ReservationEntity> reservations;
+    private Collection<ReservationEntity> reservations;
 }

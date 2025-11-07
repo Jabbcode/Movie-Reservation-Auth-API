@@ -1,13 +1,22 @@
 package com.movie_app.movie.shared.filters;
 
-import lombok.Data;
+import lombok.*;
 
-import java.time.LocalDateTime;
+import java.io.Serial;
+import java.util.Collection;
 
-@Data
-public abstract class Filter {
+@AllArgsConstructor
+@Builder(toBuilder = true)
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+public class Filter implements FilterMovie, FilterReservation {
 
-    private LocalDateTime startDate;
+    @Serial
+    private static final long serialVersionUID = 8832327472756517114L;
 
-    private LocalDateTime endDate;
+    private Collection<String> title;
+
+    private String username;
 }
