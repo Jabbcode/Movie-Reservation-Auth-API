@@ -54,15 +54,14 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     @Transactional
     public Reservation save(final Reservation reservation) {
-        final MovieEntity movieEntity = this.movieRepository.findById(reservation.getMovie().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("No se encontró la película con ID: " + reservation.getMovie().getId()));
+        final MovieEntity movieEntity = this.movieRepository.findById(reservation.getMovieId())
+                .orElseThrow(() -> new ResourceNotFoundException("No se encontró la película con ID: " + reservation.getMovieId()));
 
         final ReservationEntity newReservation = this.reservationRepository.save(this.reservationMapper.asEntity(reservation));
 
         Reservation result = this.reservationMapper.asModel(newReservation);
         result.setMovie(this.movieMapper.asModel(movieEntity));
-
-        return result;
+        return this.reservationMapper.asModel(this.reservationRepository.save(this.reservationMapper.asEntity(result)));
     }
 
     @Override

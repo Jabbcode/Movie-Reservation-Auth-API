@@ -22,5 +22,8 @@ public class Reservation implements Serializable {
 
     private LocalDateTime reservationDate;
 
+    private Integer movieId;
+
+    @ToString.Exclude
     private Movie movie;
 }

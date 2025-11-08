@@ -9,8 +9,9 @@ import com.movie_app.movie.shared.filters.FilterMovie;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = { ReservationMapper.class })
 public interface MovieMapper {
 
     MovieDTO asDTO(Movie src);
@@ -25,5 +26,9 @@ public interface MovieMapper {
 
     @BeanMapping(resultType = Filter.class)
     FilterMovie asModel(FilterMovieDTO src);
+
+    @Named("mapBasicMovie")
+    @Mapping(target = "reservations", ignore = true)
+    Movie mapBasicMovie(MovieEntity src);
 
 }
