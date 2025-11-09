@@ -10,6 +10,7 @@ import com.movie_app.movie.repositories.mysql.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.List;
 import java.util.Set;
@@ -93,7 +94,7 @@ public class DataInitializer {
                 UserEntity userA = UserEntity.builder()
                         .username("one")
                         .email("one@test.com")
-                        .password("1234")
+                        .password(new BCryptPasswordEncoder().encode("1234"))
                         .isEnabled(true)
                         .accountNoExpired(true)
                         .accountNoLocked(true)
@@ -104,7 +105,7 @@ public class DataInitializer {
                 UserEntity userB = UserEntity.builder()
                         .username("two")
                         .email("two@test.com")
-                        .password("1234")
+                        .password(new BCryptPasswordEncoder().encode("1234"))
                         .isEnabled(true)
                         .accountNoExpired(true)
                         .accountNoLocked(true)
@@ -115,7 +116,7 @@ public class DataInitializer {
                 UserEntity userC = UserEntity.builder()
                         .username("three")
                         .email("three@test.com")
-                        .password("1234")
+                        .password(new BCryptPasswordEncoder().encode("1234"))
                         .isEnabled(true)
                         .accountNoExpired(true)
                         .accountNoLocked(true)
