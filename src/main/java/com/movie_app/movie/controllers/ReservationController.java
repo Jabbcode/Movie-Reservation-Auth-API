@@ -23,7 +23,7 @@ public class ReservationController {
     private final ReservationMapper reservationMapper;
 
     @PostMapping("/search")
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("hasAuthority('READ_RESERVATION')")
     public ResponseEntity<Collection<ReservationDTO>> findByFilter(final @RequestBody FilterReservationDTO filterDTO) {
         final Collection<ReservationDTO> reservations = this.reservationService.findByFilter(this.reservationMapper.asModel(filterDTO))
                 .stream()
@@ -33,21 +33,21 @@ public class ReservationController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('READ_RESERVATION')")
     public ResponseEntity<ReservationDTO> findById(final @PathVariable Integer id) {
         final ReservationDTO reservation = this.reservationMapper.asDTO(this.reservationService.findById(id));
         return ResponseEntity.ok(reservation);
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PreAuthorize("hasAuthority('CREATE_RESERVATION')")
     public ResponseEntity<ReservationDTO> save(final @Valid @RequestBody ReservationDTO reservationDto) {
         final ReservationDTO newReservation = this.reservationMapper.asDTO(this.reservationService.save(this.reservationMapper.asModel(reservationDto)));
         return ResponseEntity.status(HttpStatus.CREATED).body(newReservation);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('DELETE_RESERVATION')")
     public ResponseEntity<Void> delete(final @PathVariable Integer id) {
         this.reservationService.delete(id);
         return ResponseEntity.noContent().build();

@@ -1,23 +1,22 @@
 package com.movie_app.movie.model.auth;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "permissions")
+@Table(name = "PERMISSIONS")
 public class PermissionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "ID_PERMISSION")
+    private Integer id;
 
-    @Column(unique = true, nullable = false, updatable = false)
+    @Column(name = "NAME", unique = true, nullable = false, updatable = false)
     private String name;
 }

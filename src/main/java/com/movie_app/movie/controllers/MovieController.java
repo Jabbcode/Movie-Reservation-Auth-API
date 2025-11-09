@@ -23,7 +23,7 @@ public class MovieController {
     private final MovieMapper movieMapper;
 
     @PostMapping("/search")
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("hasAuthority('READ_MOVIE')")
     public ResponseEntity<Collection<MovieDTO>> findByFilter(final @RequestBody FilterMovieDTO filterDTO) {
         final Collection<MovieDTO> movies = this.movieService.findByFilter(this.movieMapper.asModel(filterDTO))
                 .stream()
@@ -33,28 +33,28 @@ public class MovieController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('READ_MOVIE')")
     public ResponseEntity<MovieDTO> findById(final @PathVariable Integer id) {
         final MovieDTO movie = this.movieMapper.asDTO(this.movieService.findById(id));
         return ResponseEntity.ok(movie);
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('CREATE_MOVIE')")
     public ResponseEntity<MovieDTO> save(final @Valid @RequestBody MovieDTO movieDto) {
         final MovieDTO newMovie = this.movieMapper.asDTO(this.movieService.save(this.movieMapper.asModel(movieDto)));
         return ResponseEntity.status(HttpStatus.CREATED).body(newMovie);
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('UPDATE_MOVIE')")
     public ResponseEntity<MovieDTO> update(final @PathVariable Integer id, final @RequestBody MovieDTO movieDto) {
         final MovieDTO updatedMovie = this.movieMapper.asDTO(this.movieService.update(id, this.movieMapper.asModel(movieDto)));
         return ResponseEntity.ok(updatedMovie);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('DELETE_MOVIE')")
     public ResponseEntity<Void> delete(final @PathVariable Integer id) {
         this.movieService.delete(id);
         return ResponseEntity.noContent().build();

@@ -6,32 +6,44 @@ import lombok.*;
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "users")
+@Table(name = "USERS")
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "ID_USER")
+    private Integer id;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "USERNAME", unique = true, nullable = false)
     private String username;
 
-    @Column(unique = true, nullable = false)
-    private String email;
-
-    @Column(nullable = false)
+    @Column(name = "PASSWORD", nullable = false)
     private String password;
 
-    private boolean enabled = true;
+    @Column(name = "EMAIL", unique = true, nullable = false)
+    private String email;
+
+    @Column(name = "IS_ENABLED")
+    private boolean isEnabled;
+
+    @Column(name = "ACCOUNT_NO_EXPIRED")
+    private boolean accountNoExpired;
+
+    @Column(name = "ACCOUNT_NO_LOCKED")
+    private boolean accountNoLocked;
+
+    @Column(name = "CREDENTIAL_NO_EXPIRED")
+    private boolean credentialNoExpired;
 
     @Builder.Default
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<RoleEntity> roleEntities = new HashSet<>();
+    @JoinTable(name = "USER_ROLES",
+            joinColumns = @JoinColumn(name = "USER_ID"),
+            inverseJoinColumns = @JoinColumn(name = "ROLE_ID"))
+    private Set<RoleEntity> roles = new HashSet<>();
 }
